@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - FNET3</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 480px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1F4E79;
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 { font-size: 22px; margin-bottom: 4px; }
+        .header p  { font-size: 13px; opacity: 0.8; }
+
+        .section { padding: 24px; border-bottom: 1px solid #eee; }
+        .section:last-child { border-bottom: none; }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .cliente-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .campo {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .campo label {
+            font-size: 11px;
+            color: #888;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .campo span {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1F4E79;
+        }
+
+        .loading {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            padding: 12px 0;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .form-group input:focus { border-color: #1F4E79; }
+
+        .btn-venta {
+            width: 100%;
+            padding: 14px;
+            background: #1F4E79;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-venta:hover { background: #2E75B6; }
+        .btn-venta:disabled { background: #aaa; cursor: not-allowed; }
+
+        .resultado {
+            display: none;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+            margin-top: 16px;
+        }
+
+        .resultado.exito {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #A5D6A7;
+        }
+
+        .resultado.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #EF9A9A;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Punto de Venta</h1>
+        <p>Sistema POS — FNET3</p>
+    </div>
+
+    
+    <div class="section">
+        <div class="section-title">Datos del Cliente</div>
+        <div id="loading" class="loading">Cargando datos del cliente...</div>
+        <div id="cliente-info" style="display:none">
+            <div class="cliente-grid">
+                <div class="campo">
+                    <label>Nombre</label>
+                    <span id="nombre">—</span>
+                </div>
+                <div class="campo">
+                    <label>Apellido</label>
+                    <span id="apellido">—</span>
+                </div>
+                <div class="campo">
+                    <label>Puntos</label>
+                    <span id="puntos">—</span>
+                </div>
+                <div class="campo">
+                    <label>ID Cliente</label>
+                    <span id="customerID">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+    <div class="section">
+        <div class="section-title">Realizar Venta</div>
+        <div class="form-group">
+            <label>Monto ($)</label>
+            <input type="number" id="totalMoney" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+            <label>Nota</label>
+            <input type="text" id="notes" placeholder="Mensaje de la operacion">
+        </div>
+        <button class="btn-venta" id="btnVenta" disabled>Realizar Venta</button>
+        <div class="resultado" id="resultado"></div>
+    </div>
+
+</div>
+
+<script>
+    let sessionID = null;
+    let customerID = null;
+
+    $(document).ready(function () {
+        $.ajax({
+            url: '/api/pos/cliente',
+            method: 'GET',
+            success: function (data) {
+                if (data.success) {
+                    sessionID  = data.sessionID;
+                    customerID = data.customerID;
+
+                    $('#nombre').text(data.nombre);
+                    $('#apellido').text(data.apellido);
+                    $('#puntos').text(data.puntos);
+                    $('#customerID').text(data.customerID);
+
+                    $('#loading').hide();
+                    $('#cliente-info').show();
+                    $('#btnVenta').prop('disabled', false);
+                } else {
+                    $('#loading').text('Error: ' + data.error);
+                }
+            },
+            error: function () {
+                $('#loading').text('No se pudo conectar al servidor.');
+            }
+        });
+    });
+
+    $('#btnVenta').click(function () {
+        const totalMoney = parseFloat($('#totalMoney').val());
+        const notes      = $('#notes').val();
+
+        if (!totalMoney || totalMoney <= 0) {
+            mostrarResultado('Ingresa un monto valido.', false);
+            return;
+        }
+
+        $('#btnVenta').prop('disabled', true).text('Procesando...');
+
+        $.ajax({
+            url: '/api/pos/venta',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                sessionID:  sessionID,
+                customerID: customerID,
+                totalMoney: totalMoney,
+                notes:      notes
+            }),
+            success: function (data) {
+                if (data.success) {
+                    mostrarResultado('Venta realizada exitosamente! Codigo: ' + data.answerCode, true);
+                } else {
+                    mostrarResultado('Error: ' + data.error, false);
+                }
+            },
+            error: function () {
+                mostrarResultado('No se pudo conectar al servidor.', false);
+            },
+            complete: function () {
+                $('#btnVenta').prop('disabled', false).text('Realizar Venta');
+            }
+        });
+    });
+
+    function mostrarResultado(mensaje, exito) {
+        const $r = $('#resultado');
+        $r.removeClass('exito error')
+          .addClass(exito ? 'exito' : 'error')
+          .text(mensaje)
+          .show();
+    }
+</script>
+
+</body>
+</html>

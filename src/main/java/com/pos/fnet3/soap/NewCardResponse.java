@@ -1,0 +1,176 @@
+
+package com.pos.fnet3.soap;
+
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Clase Java para anonymous complex type.
+ * 
+ * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
+ * 
+ * <pre>{@code
+ * <complexType>
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="answerCode" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         <element name="customer" type="{http://FidelyNET3_SW_01_89_00}WS_CustomerInfo"/>
+ *         <element name="movement" type="{http://FidelyNET3_SW_01_89_00}WS_Movement"/>
+ *         <element name="shop" type="{http://FidelyNET3_SW_01_89_00}WS_ShopStatus"/>
+ *         <element name="promotions" type="{http://FidelyNET3_SW_01_89_00}WS_Promotion" maxOccurs="unbounded"/>
+ *       </sequence>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {
+    "answerCode",
+    "customer",
+    "movement",
+    "shop",
+    "promotions"
+})
+@XmlRootElement(name = "NewCardResponse")
+public class NewCardResponse {
+
+    protected int answerCode;
+    @XmlElement(required = true)
+    protected WSCustomerInfo customer;
+    @XmlElement(required = true)
+    protected WSMovement movement;
+    @XmlElement(required = true)
+    protected WSShopStatus shop;
+    @XmlElement(required = true)
+    protected List<WSPromotion> promotions;
+
+    /**
+     * Obtiene el valor de la propiedad answerCode.
+     * 
+     */
+    public int getAnswerCode() {
+        return answerCode;
+    }
+
+    /**
+     * Define el valor de la propiedad answerCode.
+     * 
+     */
+    public void setAnswerCode(int value) {
+        this.answerCode = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad customer.
+     * 
+     * @return
+     *     possible object is
+     *     {@link WSCustomerInfo }
+     *     
+     */
+    public WSCustomerInfo getCustomer() {
+        return customer;
+    }
+
+    /**
+     * Define el valor de la propiedad customer.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link WSCustomerInfo }
+     *     
+     */
+    public void setCustomer(WSCustomerInfo value) {
+        this.customer = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad movement.
+     * 
+     * @return
+     *     possible object is
+     *     {@link WSMovement }
+     *     
+     */
+    public WSMovement getMovement() {
+        return movement;
+    }
+
+    /**
+     * Define el valor de la propiedad movement.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link WSMovement }
+     *     
+     */
+    public void setMovement(WSMovement value) {
+        this.movement = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad shop.
+     * 
+     * @return
+     *     possible object is
+     *     {@link WSShopStatus }
+     *     
+     */
+    public WSShopStatus getShop() {
+        return shop;
+    }
+
+    /**
+     * Define el valor de la propiedad shop.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link WSShopStatus }
+     *     
+     */
+    public void setShop(WSShopStatus value) {
+        this.shop = value;
+    }
+
+    /**
+     * Gets the value of the promotions property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a {@code set} method for the promotions property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPromotions().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link WSPromotion }
+     * 
+     * 
+     * @return
+     *     The value of the promotions property.
+     */
+    public List<WSPromotion> getPromotions() {
+        if (promotions == null) {
+            promotions = new ArrayList<>();
+        }
+        return this.promotions;
+    }
+
+}
