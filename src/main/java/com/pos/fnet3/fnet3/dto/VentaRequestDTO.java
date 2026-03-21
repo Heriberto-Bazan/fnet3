@@ -1,0 +1,11 @@
+package com.pos.fnet3.fnet3.dto;
+
+import lombok.Data;
+
+@Data
+public class VentaRequestDTO {
+    private String sessionID;
+    private long customerID;
+    private double totalMoney;
+    private String notes;
+}
