@@ -4,35 +4,50 @@ let nombre = null;
 let apellido = null;
 
 $(document).ready(function () {
-    $.ajax({
-        url: '/api/pos/cliente',
-        method: 'GET',
-        success: function (data) {
-            sessionID  = data.sessionID;
-            customerID = data.customerID;
-            nombre     = data.nombre;
-            apellido   = data.apellido;
 
-            $('#nombre').text(data.nombre);
-            $('#apellido').text(data.apellido);
-            $('#puntos').text(data.puntos);
-            $('#customerID').text(data.customerID);
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login.html';
+        return;
+    }
 
-            $('#loading').hide();
-            $('#cliente-info').show();
-            $('#btnVenta').prop('disabled', false);
-        },
-        error: function (xhr) {
-            const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Error de conexion';
-            $('#loading').text('❌ ' + msg);
-        }
+    if (!sessionStorage.getItem('customerID')) {
+        window.location.href = '/cliente.html';
+        return;
+    }
+
+    sessionID  = sessionStorage.getItem('sessionID');
+    customerID = sessionStorage.getItem('customerID');
+    nombre     = sessionStorage.getItem('nombre');
+    apellido   = sessionStorage.getItem('apellido');
+
+    // Muestra datos en pantalla
+    $('#usuarioActivo').text(sessionStorage.getItem('usuario'));
+    $('#nombre').text(nombre);
+    $('#apellido').text(apellido);
+    $('#puntos').text('—');
+    $('#customerID').text(customerID);
+    $('#loading').hide();
+    $('#cliente-info').show();
+    $('#btnVenta').prop('disabled', false);
+
+    $('#btnLogout').click(function () {
+        $.ajax({
+            url: '/api/auth/logout',
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token },
+            complete: function () {
+                sessionStorage.clear();
+                window.location.href = '/login.html';
+            }
+        });
     });
 });
 
 
 $('#totalMoney').on('keypress', function (e) {
     const char = String.fromCharCode(e.which);
-    const val = $(this).val().replace(/,/g, '');
+    const val = $(this).val();
     if (!/[0-9]/.test(char) && !(char === '.' && !val.includes('.'))) {
         e.preventDefault();
     }
@@ -55,9 +70,10 @@ $('#totalMoney').on('input', function () {
     }
 });
 
+// Realizar venta
 $('#btnVenta').click(function () {
-    const raw = $('#totalMoney').val().replace(/,/g, '');
-    const totalMoney = parseFloat(raw);
+    const token      = sessionStorage.getItem('token');
+    const totalMoney = parseFloat($('#totalMoney').val().replace(/,/g, ''));
     const notes      = $('#notes').val();
 
     if (!totalMoney || totalMoney <= 0) {
@@ -77,6 +93,7 @@ $('#btnVenta').click(function () {
         url: '/api/pos/venta',
         method: 'POST',
         contentType: 'application/json',
+        headers: { 'Authorization': 'Bearer ' + token },
         data: JSON.stringify({
             sessionID:  sessionID,
             customerID: customerID,
@@ -98,12 +115,13 @@ $('#btnVenta').click(function () {
     });
 });
 
+
 $('#btnNueva').click(function () {
-    $('#totalMoney').val('').css('border-color', '#e0e0e0');
-    $('#notes').val('');
-    $('#resultado').hide();
-    $('#btnNueva').hide();
-    $('#btnVenta').prop('disabled', false);
+    sessionStorage.removeItem('customerID');
+    sessionStorage.removeItem('nombre');
+    sessionStorage.removeItem('apellido');
+    sessionStorage.removeItem('tarjeta');
+    window.location.href = '/cliente.html';
 });
 
 let historial = [];

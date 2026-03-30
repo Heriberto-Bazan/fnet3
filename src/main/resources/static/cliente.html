@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Cliente — POS FNET3</title>
+    <link rel="stylesheet" href="/css/cliente.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-top">
+            <h1>Punto de Venta</h1>
+            <button class="btn-logout" id="btnLogout">Cerrar Sesion</button>
+        </div>
+        <p>Sistema POS &mdash; FNET3 | Operador: <span id="usuarioActivo"></span></p>
+    </div>
+
+    <!-- BUSCAR CLIENTE -->
+    <div class="section">
+        <div class="section-title">&#128203; Buscar Cliente</div>
+        <div class="form-group">
+            <label>Numero de Tarjeta</label>
+            <div class="input-group">
+                <input type="text" id="tarjeta" placeholder="Ingresa el numero de tarjeta">
+                <button class="btn-buscar" id="btnBuscar">Buscar</button>
+            </div>
+        </div>
+        <div class="error" id="error"></div>
+    </div>
+
+    <!-- DATOS DEL CLIENTE -->
+    <div class="section" id="cliente-section" style="display:none">
+        <div class="section-title">&#128100; Datos del Cliente</div>
+        <div class="cliente-grid">
+            <div class="campo">
+                <label>Nombre</label>
+                <span id="nombre">&#8212;</span>
+            </div>
+            <div class="campo">
+                <label>Apellido</label>
+                <span id="apellido">&#8212;</span>
+            </div>
+            <div class="campo">
+                <label>Puntos</label>
+                <span id="puntos">&#8212;</span>
+            </div>
+            <div class="campo">
+                <label>ID Cliente</label>
+                <span id="customerID">&#8212;</span>
+            </div>
+        </div>
+        <button class="btn-venta" id="btnIrVenta">Continuar a Venta</button>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/js/cliente.js"></script>
+
+</body>
+</html>

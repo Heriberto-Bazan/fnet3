@@ -11,38 +11,40 @@
 <div class="container">
 
     <div class="header">
-        <h1>Punto de Venta</h1>
-        <p>Sistema POS — FNET3</p>
+        <div class="header-top">
+            <h1>Punto de Venta</h1>
+            <button class="btn-logout" id="btnLogout">Cerrar Sesion</button>
+        </div>
+        <p>Sistema POS  FNET3 | Operador: <span id="usuarioActivo"></span></p>
     </div>
 
     <div class="section">
         <div class="section-title">Datos del Cliente</div>
-        <div id="loading" class="loading">Cargando datos del cliente...</div>
+        <div id="loading" class="loading"> Cargando datos del cliente...</div>
         <div id="cliente-info" style="display:none">
             <div class="cliente-grid">
                 <div class="campo">
                     <label>Nombre</label>
-                    <span id="nombre">—</span>
+                    <span id="nombre">&#8212;</span>
                 </div>
                 <div class="campo">
                     <label>Apellido</label>
-                    <span id="apellido">—</span>
+                    <span id="apellido">&#8212;</span>
                 </div>
                 <div class="campo">
                     <label>Puntos</label>
-                    <span id="puntos">—</span>
+                    <span id="puntos">&#8212;</span>
                 </div>
                 <div class="campo">
                     <label>ID Cliente</label>
-                    <span id="customerID">—</span>
+                    <span id="customerID">&#8212;</span>
                 </div>
             </div>
         </div>
     </div>
 
-
     <div class="section">
-        <div class="section-title">Realizar Venta</div>
+        <div class="section-title"> Realizar Venta</div>
         <div class="form-group">
             <label>Monto ($)</label>
             <input type="text" id="totalMoney" placeholder="1,500.00">
@@ -55,14 +57,12 @@
         <div class="resultado" id="resultado"></div>
     </div>
 
-   
     <div class="section" style="padding-top: 0; border-bottom: none;">
         <button class="btn-nueva" id="btnNueva" style="display:none">
             + Nueva Operacion
         </button>
     </div>
 
-   
     <div class="section" id="historial-section" style="display:none">
         <div class="section-title">Historial de la sesion</div>
         <div id="historial-lista"></div>
