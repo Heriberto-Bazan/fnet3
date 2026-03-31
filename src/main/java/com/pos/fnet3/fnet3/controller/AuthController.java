@@ -19,7 +19,6 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-  
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(
             @RequestBody LoginRequestDTO body,
@@ -27,11 +26,11 @@ public class AuthController {
 
         LoginResponseDTO dto = authService.login(body);
         if (dto.isSuccess()) {
-            // Crea cookie HttpOnly con el token
+    
             Cookie cookie = new Cookie("token", dto.getToken());
-            cookie.setHttpOnly(true);  
-            cookie.setPath("/");        
-            cookie.setMaxAge(900);     
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(900);
             response.addCookie(cookie);
 
             dto.setToken(null);
@@ -51,7 +50,6 @@ public class AuthController {
             authService.logout(token);
         }
 
-        
         Cookie cookie = new Cookie("token", "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -61,7 +59,6 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    // Extrae el token de la cookie
     public static String obtenerTokenDeCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
