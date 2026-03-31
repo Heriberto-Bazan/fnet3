@@ -7,6 +7,5 @@ public class LoginResponseDTO {
     private boolean success;
     private String sessionID;
     private String username;
-    private String token;
     private String error;
 }

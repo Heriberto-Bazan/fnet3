@@ -2,9 +2,7 @@ let sessionID = null;
 
 $(document).ready(function () {
 
-
-    const token = sessionStorage.getItem('token');
-    if (!token) {
+    if (!sessionStorage.getItem('usuario')) {
         window.location.href = '/login.html';
         return;
     }
@@ -12,18 +10,15 @@ $(document).ready(function () {
     $('#usuarioActivo').text(sessionStorage.getItem('usuario'));
     sessionID = sessionStorage.getItem('sessionID');
 
-    
     sessionStorage.removeItem('customerID');
     sessionStorage.removeItem('nombre');
     sessionStorage.removeItem('apellido');
     sessionStorage.removeItem('tarjeta');
 
-   
     $('#tarjeta').keypress(function (e) {
         if (e.which === 13) $('#btnBuscar').click();
     });
 
-    // Buscar cliente
     $('#btnBuscar').click(function () {
         const tarjeta = $('#tarjeta').val().trim();
 
@@ -39,15 +34,13 @@ $(document).ready(function () {
         $.ajax({
             url: '/api/pos/cliente/' + tarjeta,
             method: 'GET',
-            headers: { 'Authorization': 'Bearer ' + token },
+            xhrFields: { withCredentials: true }, 
             success: function (data) {
-            
                 sessionStorage.setItem('customerID', data.customerID);
                 sessionStorage.setItem('nombre', data.nombre);
                 sessionStorage.setItem('apellido', data.apellido);
                 sessionStorage.setItem('tarjeta', tarjeta);
 
-        
                 $('#nombre').text(data.nombre);
                 $('#apellido').text(data.apellido);
                 $('#puntos').text(data.puntos);
@@ -55,6 +48,11 @@ $(document).ready(function () {
                 $('#cliente-section').show();
             },
             error: function (xhr) {
+                if (xhr.status === 401) {
+                    sessionStorage.clear();
+                    window.location.href = '/login.html';
+                    return;
+                }
                 const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Error de conexion';
                 mostrarError(msg);
             },
@@ -72,7 +70,7 @@ $(document).ready(function () {
         $.ajax({
             url: '/api/auth/logout',
             method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token },
+            xhrFields: { withCredentials: true },
             complete: function () {
                 sessionStorage.clear();
                 window.location.href = '/login.html';

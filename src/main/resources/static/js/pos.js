@@ -5,8 +5,7 @@ let apellido = null;
 
 $(document).ready(function () {
 
-    const token = sessionStorage.getItem('token');
-    if (!token) {
+    if (!sessionStorage.getItem('usuario')) {
         window.location.href = '/login.html';
         return;
     }
@@ -21,7 +20,6 @@ $(document).ready(function () {
     nombre     = sessionStorage.getItem('nombre');
     apellido   = sessionStorage.getItem('apellido');
 
-    // Muestra datos en pantalla
     $('#usuarioActivo').text(sessionStorage.getItem('usuario'));
     $('#nombre').text(nombre);
     $('#apellido').text(apellido);
@@ -35,7 +33,7 @@ $(document).ready(function () {
         $.ajax({
             url: '/api/auth/logout',
             method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token },
+            xhrFields: { withCredentials: true },
             complete: function () {
                 sessionStorage.clear();
                 window.location.href = '/login.html';
@@ -70,9 +68,8 @@ $('#totalMoney').on('input', function () {
     }
 });
 
-// Realizar venta
+
 $('#btnVenta').click(function () {
-    const token      = sessionStorage.getItem('token');
     const totalMoney = parseFloat($('#totalMoney').val().replace(/,/g, ''));
     const notes      = $('#notes').val();
 
@@ -93,9 +90,8 @@ $('#btnVenta').click(function () {
         url: '/api/pos/venta',
         method: 'POST',
         contentType: 'application/json',
-        headers: { 'Authorization': 'Bearer ' + token },
+        xhrFields: { withCredentials: true }, 
         data: JSON.stringify({
-            sessionID:  sessionID,
             customerID: customerID,
             totalMoney: totalMoney,
             notes:      notes
@@ -106,6 +102,11 @@ $('#btnVenta').click(function () {
             $('#btnNueva').show();
         },
         error: function (xhr) {
+            if (xhr.status === 401) {
+                sessionStorage.clear();
+                window.location.href = '/login.html';
+                return;
+            }
             const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Error de conexion';
             mostrarResultado('Error: ' + msg, false);
         },

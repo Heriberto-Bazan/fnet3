@@ -27,7 +27,7 @@ public class PosController {
             @PathVariable String tarjeta,
             HttpServletRequest request) {
         try {
-            String token = request.getHeader("Authorization").substring(7);
+            String token = AuthController.obtenerTokenDeCookie(request);
             String sessionID = authService.getSession(token);
             ClienteDTO dto = fnetService.getCliente(sessionID, tarjeta);
             if (dto.isSuccess()) {
@@ -45,17 +45,27 @@ public class PosController {
 
     @PostMapping("/venta")
     public ResponseEntity<VentaResponseDTO> realizarVenta(
-            @RequestBody VentaRequestDTO body) {
-        VentaResponseDTO dto = fnetService.sale(
-            body.getSessionID(),
-            body.getCustomerID(),
-            body.getTotalMoney(),
-            body.getNotes()
-        );
-        if (dto.isSuccess()) {
-            return ResponseEntity.ok(dto);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
+            @RequestBody VentaRequestDTO body,
+            HttpServletRequest request) {
+        try {
+            String token = AuthController.obtenerTokenDeCookie(request);
+            String sessionID = authService.getSession(token);
+            VentaResponseDTO dto = fnetService.sale(
+                sessionID,
+                body.getCustomerID(),
+                body.getTotalMoney(),
+                body.getNotes()
+            );
+            if (dto.isSuccess()) {
+                return ResponseEntity.ok(dto);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
+            }
+        } catch (Exception e) {
+            VentaResponseDTO dto = new VentaResponseDTO();
+            dto.setSuccess(false);
+            dto.setError(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dto);
         }
     }
 }

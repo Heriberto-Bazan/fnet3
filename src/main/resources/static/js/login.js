@@ -1,9 +1,5 @@
 $(document).ready(function () {
 
-    const token = sessionStorage.getItem('token');
-    if (token) {
-        window.location.href = '/cliente.html';
-    }
 
     $(document).keypress(function (e) {
         if (e.which === 13) $('#btnLogin').click();
@@ -25,9 +21,10 @@ $(document).ready(function () {
             url: '/api/auth/login',
             method: 'POST',
             contentType: 'application/json',
+            xhrFields: { withCredentials: true },
             data: JSON.stringify({ username, password }),
             success: function (data) {
-                sessionStorage.setItem('token', data.token);
+               
                 sessionStorage.setItem('sessionID', data.sessionID);
                 sessionStorage.setItem('usuario', data.username);
                 window.location.href = '/cliente.html';

@@ -46,20 +46,19 @@ public class AuthService {
     public LoginResponseDTO login(LoginRequestDTO request) {
         LoginResponseDTO dto = new LoginResponseDTO();
         try {
-            // Busca el usuario por username
+        
             UsuarioConfig.Usuario usuario = usuarioConfig.getUsuarios().stream()
                 .filter(u -> u.getUsername().equals(request.getUsername()))
                 .findFirst()
                 .orElse(null);
 
-            // Verifica que exista y que el password coincida con Argon2
             if (usuario == null || !encoder.matches(request.getPassword(), usuario.getPassword())) {
                 dto.setSuccess(false);
                 dto.setError("Usuario o password incorrectos.");
                 return dto;
             }
 
-            // Autentica con FNET3 usando credenciales del requerimiento
+            // Autentica con FNET3
             log.info("Login con terminal: {} usuario: {}", fnetSerial, request.getUsername());
             SynchroAndLoginRequest soap = new SynchroAndLoginRequest();
             soap.setSerialNumber(fnetSerial);
@@ -77,7 +76,7 @@ public class AuthService {
             dto.setSuccess(true);
             dto.setSessionID(sid);
             dto.setUsername(usuario.getUsername());
-            dto.setToken(token);
+            dto.setToken(token); 
 
         } catch (Exception e) {
             log.error("Error en login: {}", e.getMessage());
@@ -88,6 +87,7 @@ public class AuthService {
     }
 
     public String getSession(String token) throws Exception {
+        if (token == null) throw new Exception("Token no encontrado.");
         String username = jwtService.obtenerUsername(token);
         String sid = sesiones.get(username);
         if (sid == null) {
